@@ -1,7 +1,9 @@
 #APL - Apunta la Placa
 
+Este es el Backend de la APP de Apunta la placa para sus principales funciones. Registro de Infracciones y Consulta por Mapa de Infracciones, a su vez también las consultas de infracciones por usuario. Todo lo correspondiente al control de datos de la App deberá ser colocado aqui.
+
 # Hackathon Starter Project
-A majority of this quick start's content was inspired or adapted from Sahat's excellent [Hackathon Starter project](https://github.com/sahat/hackathon-starter).
+El boilerplate para empezar fue extraído de aqui [Hackathon Starter project](https://github.com/sahat/hackathon-starter).
 
 Tipos de infracciones: 
 http://www.datosabiertos.gob.pe/dataset/tipos-de-infracciones/resource/c07e3fbc-f628-4f92-b528-9add29bbfa1e
