@@ -1,5 +1,5 @@
 import axios from "axios";
-import { default as Infraccion, IInfraccion, IUbicacion } from "../models/Infraccion";
+import { default as Infraccion, IInfraccion, IUbicacion, IInfraccionModel } from "../models/Infraccion";
 import { Response, Request, NextFunction } from "express";
 
 
@@ -50,6 +50,34 @@ export class InfraccionClass implements IInfraccion {
         this.inspector = inspector;
         return this;
     }
+
+    public setFromIInfraccionModel( iinfraccionModel: IInfraccionModel ) {
+        this.nro = iinfraccionModel.nro;
+        this.anio = iinfraccionModel.anio;
+        this.mes = iinfraccionModel.mes;
+        this.fecha = iinfraccionModel.fecha;
+        this.nroActaControl = iinfraccionModel.nroActaControl;
+        this.codigoInfraccion = iinfraccionModel.codigoInfraccion;
+        this.tenorInfraccion = iinfraccionModel.tenorInfraccion;
+        this.situacionActa = iinfraccionModel.situacionActa;
+        this.actasAnuladas = iinfraccionModel.actasAnuladas;
+        this.apellidosConductor = iinfraccionModel.apellidosConductor;
+        this.nombresConductor = iinfraccionModel.nombresConductor;
+        this.nroLicenciaConductor = iinfraccionModel.nroLicenciaConductor;
+        this.placaDeRodaje = iinfraccionModel.placaDeRodaje;
+        this.tipoDeVia = iinfraccionModel.tipoDeVia;
+        this.lugarDeIntervencion = iinfraccionModel.lugarDeIntervencion;
+        this.cuadra = iinfraccionModel.cuadra;
+        this.codRuta = iinfraccionModel.codRuta;
+        this.empresaTransporte = iinfraccionModel.empresaTransporte;
+        this.inspector = iinfraccionModel.inspector;
+        this.linkFoto = iinfraccionModel.linkFoto;
+        this.dniDenunciante = iinfraccionModel.dniDenunciante;
+        this.ubicacion = iinfraccionModel.ubicacion;
+        this.descripcion = iinfraccionModel.descripcion;
+        return this;
+    }
+
     public setSaveData(linkFoto: string, placaDeRodaje: string, dniDenunciante: string, ubicacion: any, descripcion: string): void {
         this.linkFoto = linkFoto;
         this.placaDeRodaje = placaDeRodaje;
@@ -182,6 +210,14 @@ export class APIHackathon {
                 ( arrayData[ index ] ? arrayData[ index + 18 ].fStr : "")
             ));
         }
-        res.json( arrayResult );
+
+        // Agregandole Los valores de Mongo
+        const infraccionesDB = await Infraccion.find({});
+        const infraccionesParsed = infraccionesDB.map( iinfraccionModel => {
+            const newInfraccion = new InfraccionClass();
+            return newInfraccion.setFromIInfraccionModel( iinfraccionModel );
+        });
+
+        res.json( [ ...arrayResult, ...infraccionesParsed  ] );
     }
 }

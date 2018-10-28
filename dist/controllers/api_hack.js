@@ -36,6 +36,32 @@ class InfraccionClass {
         this.inspector = inspector;
         return this;
     }
+    setFromIInfraccionModel(iinfraccionModel) {
+        this.nro = iinfraccionModel.nro;
+        this.anio = iinfraccionModel.anio;
+        this.mes = iinfraccionModel.mes;
+        this.fecha = iinfraccionModel.fecha;
+        this.nroActaControl = iinfraccionModel.nroActaControl;
+        this.codigoInfraccion = iinfraccionModel.codigoInfraccion;
+        this.tenorInfraccion = iinfraccionModel.tenorInfraccion;
+        this.situacionActa = iinfraccionModel.situacionActa;
+        this.actasAnuladas = iinfraccionModel.actasAnuladas;
+        this.apellidosConductor = iinfraccionModel.apellidosConductor;
+        this.nombresConductor = iinfraccionModel.nombresConductor;
+        this.nroLicenciaConductor = iinfraccionModel.nroLicenciaConductor;
+        this.placaDeRodaje = iinfraccionModel.placaDeRodaje;
+        this.tipoDeVia = iinfraccionModel.tipoDeVia;
+        this.lugarDeIntervencion = iinfraccionModel.lugarDeIntervencion;
+        this.cuadra = iinfraccionModel.cuadra;
+        this.codRuta = iinfraccionModel.codRuta;
+        this.empresaTransporte = iinfraccionModel.empresaTransporte;
+        this.inspector = iinfraccionModel.inspector;
+        this.linkFoto = iinfraccionModel.linkFoto;
+        this.dniDenunciante = iinfraccionModel.dniDenunciante;
+        this.ubicacion = iinfraccionModel.ubicacion;
+        this.descripcion = iinfraccionModel.descripcion;
+        return this;
+    }
     setSaveData(linkFoto, placaDeRodaje, dniDenunciante, ubicacion, descripcion) {
         this.linkFoto = linkFoto;
         this.placaDeRodaje = placaDeRodaje;
@@ -115,7 +141,13 @@ class APIHackathon {
                 const infraccion = new InfraccionClass();
                 arrayResult.push(infraccion.setAPIData((arrayData[index] ? arrayData[index].fStr : "0"), (arrayData[index] ? arrayData[index + 1].fStr : "0"), (arrayData[index] ? arrayData[index + 2].fStr : ""), (arrayData[index] ? arrayData[index + 3].fStr : ""), (arrayData[index] ? arrayData[index + 4].fStr : "0"), (arrayData[index] ? arrayData[index + 5].fStr : ""), (arrayData[index] ? arrayData[index + 6].fStr : ""), (arrayData[index] ? arrayData[index + 7].fStr : ""), (arrayData[index] ? arrayData[index + 8].fStr : ""), (arrayData[index] ? arrayData[index + 9].fStr : ""), (arrayData[index] ? arrayData[index + 10].fStr : ""), (arrayData[index] ? arrayData[index + 11].fStr : ""), (arrayData[index] ? arrayData[index + 12].fStr : ""), (arrayData[index] ? arrayData[index + 13].fStr : ""), (arrayData[index] ? arrayData[index + 14].fStr : ""), (arrayData[index] ? arrayData[index + 15].fStr : ""), (arrayData[index] ? arrayData[index + 16].fStr : ""), (arrayData[index] ? arrayData[index + 17].fStr : ""), (arrayData[index] ? arrayData[index + 18].fStr : "")));
             }
-            res.json(arrayResult);
+            // Agregandole Los valores de Mongo
+            const infraccionesDB = yield Infraccion_1.default.find({});
+            const infraccionesParsed = infraccionesDB.map(iinfraccionModel => {
+                const newInfraccion = new InfraccionClass();
+                return newInfraccion.setFromIInfraccionModel(iinfraccionModel);
+            });
+            res.json([...arrayResult, ...infraccionesParsed]);
         });
     }
 }

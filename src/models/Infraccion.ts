@@ -41,7 +41,7 @@ export interface IInfraccion {
     setSaveData( linkFoto: string, placaDeRodaje: string, dniDenunciante: string, ubicacion: IUbicacion, descripcion: string ): void;
 }
 
-interface IInfraccionModel extends IInfraccion, Document { }
+export interface IInfraccionModel extends IInfraccion, Document { }
 
 const infraccionSchema = new Schema({
     // API Miraflores
