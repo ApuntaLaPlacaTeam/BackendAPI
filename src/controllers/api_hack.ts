@@ -1,5 +1,63 @@
 import axios from "axios";
+import { default as Infraccion, IInfraccion, IUbicacion } from "../models/Infraccion";
 import { Response, Request, NextFunction } from "express";
+
+
+export class InfraccionClass implements IInfraccion {
+    nro: number;
+    anio: number;
+    mes: string;
+    fecha: string;
+    nroActaControl: number;
+    codigoInfraccion: string;
+    tenorInfraccion: string;
+    situacionActa: string;
+    actasAnuladas: number;
+    apellidosConductor: string;
+    nombresConductor: string;
+    nroLicenciaConductor: string;
+    tipoDeVia: string;
+    lugarDeIntervencion: string;
+    cuadra: string;
+    codRuta: string;
+    empresaTransporte: string;
+    inspector: string;
+    placaDeRodaje: string;
+    linkFoto: string;
+    dniDenunciante: string;
+    ubicacion: IUbicacion;
+    descripcion: string;
+
+    public setAPIData(nro: any, anio: any, mes: string, fecha: string, nroActaControl: any, codigoInfraccion: string, tenorInfraccion: string, situacionActa: string, actasAnuladas: string, apellidosConductor: string, nombresConductor: string, nroLicenciaConductor: string, placaDeRodaje: string, tipoDeVia: string, lugarDeIntervencion: string, cuadra: string, codRuta: string, empresaTransporte: string, inspector: string) {
+        this.nro = parseInt( nro );
+        this.anio = parseInt( anio );
+        this.mes = mes;
+        this.fecha = fecha;
+        this.nroActaControl = parseInt( nroActaControl );
+        this.codigoInfraccion = codigoInfraccion;
+        this.tenorInfraccion = tenorInfraccion;
+        this.situacionActa = situacionActa;
+        this.actasAnuladas = parseInt( actasAnuladas );
+        this.apellidosConductor = ( apellidosConductor == "0" ? "" : apellidosConductor );
+        this.nombresConductor = ( nombresConductor == "0" ? "" : nombresConductor );
+        this.nroLicenciaConductor = nroLicenciaConductor;
+        this.placaDeRodaje = placaDeRodaje;
+        this.tipoDeVia = tipoDeVia;
+        this.lugarDeIntervencion = lugarDeIntervencion;
+        this.cuadra = cuadra;
+        this.codRuta = codRuta;
+        this.empresaTransporte = empresaTransporte;
+        this.inspector = inspector;
+        return this;
+    }
+    public setSaveData(linkFoto: string, placaDeRodaje: string, dniDenunciante: string, ubicacion: any, descripcion: string): void {
+        this.linkFoto = linkFoto;
+        this.placaDeRodaje = placaDeRodaje;
+        this.dniDenunciante = dniDenunciante;
+        this.ubicacion = ubicacion;
+        this.descripcion = descripcion;
+    }
+}
 
 export class TipoInfraccion {
     codigo: string;
@@ -33,49 +91,6 @@ export class InfraccionxUbicacion {
     }
 }
 
-export class Infraccion {
-    nro: number;
-    anio: number;
-    mes: string;
-    fecha: string;
-    nroActaControl: number;
-    codigoInfraccion: string;
-    tenorInfraccion: string;
-    situacionActa: string;
-    actasAnuladas: number;
-    apellidosConductor: string;
-    nombresConductor: string;
-    nroLicenciaConductor: string;
-    placaDeRodaje: string;
-    tipoDeVia: string;
-    lugarDeIntervencion: string;
-    cuadra: string;
-    codRuta: string;
-    empresaTransporte: string;
-    inspector: string;
-    constructor( nro: any, anio: any, mes: string, fecha: string, nroActaControl: any, codigoInfraccion: string, tenorInfraccion: string, situacionActa: string, actasAnuladas: string, apellidosConductor: string, nombresConductor: string, nroLicenciaConductor: string, placaDeRodaje: string, tipoDeVia: string, lugarDeIntervencion: string, cuadra: string, codRuta: string, empresaTransporte: string, inspector: string ) {
-        this.nro = parseInt( nro );
-        this.anio = parseInt( anio );
-        this.mes = mes;
-        this.fecha = fecha;
-        this.nroActaControl = parseInt( nroActaControl );
-        this.codigoInfraccion = codigoInfraccion;
-        this.tenorInfraccion = tenorInfraccion;
-        this.situacionActa = situacionActa;
-        this.actasAnuladas = parseInt( actasAnuladas );
-        this.apellidosConductor = ( apellidosConductor == "0" ? "" : apellidosConductor );
-        this.nombresConductor = ( nombresConductor == "0" ? "" : nombresConductor );
-        this.nroLicenciaConductor = nroLicenciaConductor;
-        this.placaDeRodaje = placaDeRodaje;
-        this.tipoDeVia = tipoDeVia;
-        this.lugarDeIntervencion = lugarDeIntervencion;
-        this.cuadra = cuadra;
-        this.codRuta = codRuta;
-        this.empresaTransporte = empresaTransporte;
-        this.inspector = inspector;
-    }
-}
-
 export class APIHackathon {
     private baseURL: string = "http://miraflores.cloudapi.junar.com/api/v2/datastreams/";
     private authPath: string = "/data.json/?auth_key=3e0e314caca6068b253fa0e3e716a9d2f4f03d75";
@@ -100,6 +115,12 @@ export class APIHackathon {
             ));
         }
         res.json( arrayResult );
+    }
+
+    public postGuardarInfraccion = async ( req: Request, res: Response, next: NextFunction ): Promise<any> => {
+        const infraccionToSave = new Infraccion( req.body );
+        await infraccionToSave.save();
+        res.json( infraccionToSave );
     }
 
     public getInfraccionesXUbicacion = async ( req: Request, res: Response, next: NextFunction ): Promise<any> => {
@@ -138,7 +159,8 @@ export class APIHackathon {
 
         // analyzeData
         for (let index = 20; index < arrayData.length; index += 20) {
-            arrayResult.push( new Infraccion (
+            const infraccion = new InfraccionClass();
+            arrayResult.push( infraccion.setAPIData(
                 ( arrayData[ index ] ? arrayData[ index ].fStr : "0"),
                 ( arrayData[ index ] ? arrayData[ index + 1 ].fStr : "0"),
                 ( arrayData[ index ] ? arrayData[ index + 2 ].fStr : ""),
