@@ -60,6 +60,7 @@ class InfraccionClass {
         this.dniDenunciante = iinfraccionModel.dniDenunciante;
         this.ubicacion = iinfraccionModel.ubicacion;
         this.descripcion = iinfraccionModel.descripcion;
+        this._id = iinfraccionModel._id;
         return this;
     }
     setSaveData(linkFoto, placaDeRodaje, dniDenunciante, ubicacion, descripcion) {
@@ -129,25 +130,41 @@ class APIHackathon {
             res.json(arrayResult);
         });
         this.getInfracciones = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-            const pathPrefix = "INFRA";
-            const result = yield axios_1.default.request({
-                url: this.baseURL + pathPrefix + this.authPath,
-                method: "get"
-            });
-            const arrayData = result.data.result.fArray;
+            const queryObject = { dniDenunciante: req.query.dniDenunciante };
             const arrayResult = [];
-            // analyzeData
-            for (let index = 20; index < arrayData.length; index += 20) {
-                const infraccion = new InfraccionClass();
-                arrayResult.push(infraccion.setAPIData((arrayData[index] ? arrayData[index].fStr : "0"), (arrayData[index] ? arrayData[index + 1].fStr : "0"), (arrayData[index] ? arrayData[index + 2].fStr : ""), (arrayData[index] ? arrayData[index + 3].fStr : ""), (arrayData[index] ? arrayData[index + 4].fStr : "0"), (arrayData[index] ? arrayData[index + 5].fStr : ""), (arrayData[index] ? arrayData[index + 6].fStr : ""), (arrayData[index] ? arrayData[index + 7].fStr : ""), (arrayData[index] ? arrayData[index + 8].fStr : ""), (arrayData[index] ? arrayData[index + 9].fStr : ""), (arrayData[index] ? arrayData[index + 10].fStr : ""), (arrayData[index] ? arrayData[index + 11].fStr : ""), (arrayData[index] ? arrayData[index + 12].fStr : ""), (arrayData[index] ? arrayData[index + 13].fStr : ""), (arrayData[index] ? arrayData[index + 14].fStr : ""), (arrayData[index] ? arrayData[index + 15].fStr : ""), (arrayData[index] ? arrayData[index + 16].fStr : ""), (arrayData[index] ? arrayData[index + 17].fStr : ""), (arrayData[index] ? arrayData[index + 18].fStr : "")));
+            let infraccionesDB = [];
+            if (!queryObject.dniDenunciante) {
+                const pathPrefix = "INFRA";
+                const result = yield axios_1.default.request({
+                    url: this.baseURL + pathPrefix + this.authPath,
+                    method: "get"
+                });
+                const arrayData = result.data.result.fArray;
+                // analyzeData
+                for (let index = 20; index < arrayData.length; index += 20) {
+                    const infraccion = new InfraccionClass();
+                    arrayResult.push(infraccion.setAPIData((arrayData[index] ? arrayData[index].fStr : "0"), (arrayData[index] ? arrayData[index + 1].fStr : "0"), (arrayData[index] ? arrayData[index + 2].fStr : ""), (arrayData[index] ? arrayData[index + 3].fStr : ""), (arrayData[index] ? arrayData[index + 4].fStr : "0"), (arrayData[index] ? arrayData[index + 5].fStr : ""), (arrayData[index] ? arrayData[index + 6].fStr : ""), (arrayData[index] ? arrayData[index + 7].fStr : ""), (arrayData[index] ? arrayData[index + 8].fStr : ""), (arrayData[index] ? arrayData[index + 9].fStr : ""), (arrayData[index] ? arrayData[index + 10].fStr : ""), (arrayData[index] ? arrayData[index + 11].fStr : ""), (arrayData[index] ? arrayData[index + 12].fStr : ""), (arrayData[index] ? arrayData[index + 13].fStr : ""), (arrayData[index] ? arrayData[index + 14].fStr : ""), (arrayData[index] ? arrayData[index + 15].fStr : ""), (arrayData[index] ? arrayData[index + 16].fStr : ""), (arrayData[index] ? arrayData[index + 17].fStr : ""), (arrayData[index] ? arrayData[index + 18].fStr : "")));
+                }
+                infraccionesDB = yield Infraccion_1.default.find({});
+            }
+            else {
+                infraccionesDB = yield Infraccion_1.default.find(queryObject);
             }
             // Agregandole Los valores de Mongo
-            const infraccionesDB = yield Infraccion_1.default.find({});
             const infraccionesParsed = infraccionesDB.map(iinfraccionModel => {
                 const newInfraccion = new InfraccionClass();
                 return newInfraccion.setFromIInfraccionModel(iinfraccionModel);
             });
             res.json([...arrayResult, ...infraccionesParsed]);
+        });
+        this.getMisInfracciones = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            // Agregandole Los valores de Mongo
+            const infraccionesDB = yield Infraccion_1.default.find();
+            const infraccionesParsed = infraccionesDB.map(iinfraccionModel => {
+                const newInfraccion = new InfraccionClass();
+                return newInfraccion.setFromIInfraccionModel(iinfraccionModel);
+            });
+            res.json(infraccionesParsed);
         });
     }
 }

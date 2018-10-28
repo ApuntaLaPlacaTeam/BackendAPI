@@ -27,6 +27,7 @@ export class InfraccionClass implements IInfraccion {
     dniDenunciante: string;
     ubicacion: IUbicacion;
     descripcion: string;
+    _id: string;
 
     public setAPIData(nro: any, anio: any, mes: string, fecha: string, nroActaControl: any, codigoInfraccion: string, tenorInfraccion: string, situacionActa: string, actasAnuladas: string, apellidosConductor: string, nombresConductor: string, nroLicenciaConductor: string, placaDeRodaje: string, tipoDeVia: string, lugarDeIntervencion: string, cuadra: string, codRuta: string, empresaTransporte: string, inspector: string) {
         this.nro = parseInt( nro );
@@ -75,6 +76,7 @@ export class InfraccionClass implements IInfraccion {
         this.dniDenunciante = iinfraccionModel.dniDenunciante;
         this.ubicacion = iinfraccionModel.ubicacion;
         this.descripcion = iinfraccionModel.descripcion;
+        this._id = iinfraccionModel._id;
         return this;
     }
 
@@ -176,48 +178,63 @@ export class APIHackathon {
     }
 
     public getInfracciones = async ( req: Request, res: Response, next: NextFunction ): Promise<any> => {
-        const pathPrefix = "INFRA";
-        const result = await axios.request({
-            url: this.baseURL + pathPrefix + this.authPath,
-            method: "get"
-        });
-
-        const arrayData = result.data.result.fArray;
+        const queryObject = { dniDenunciante: req.query.dniDenunciante };
         const arrayResult = [];
+        let infraccionesDB = [];
 
-        // analyzeData
-        for (let index = 20; index < arrayData.length; index += 20) {
-            const infraccion = new InfraccionClass();
-            arrayResult.push( infraccion.setAPIData(
-                ( arrayData[ index ] ? arrayData[ index ].fStr : "0"),
-                ( arrayData[ index ] ? arrayData[ index + 1 ].fStr : "0"),
-                ( arrayData[ index ] ? arrayData[ index + 2 ].fStr : ""),
-                ( arrayData[ index ] ? arrayData[ index + 3 ].fStr : ""),
-                ( arrayData[ index ] ? arrayData[ index + 4 ].fStr : "0"),
-                ( arrayData[ index ] ? arrayData[ index + 5 ].fStr : ""),
-                ( arrayData[ index ] ? arrayData[ index + 6 ].fStr : ""),
-                ( arrayData[ index ] ? arrayData[ index + 7 ].fStr : ""),
-                ( arrayData[ index ] ? arrayData[ index + 8 ].fStr : ""),
-                ( arrayData[ index ] ? arrayData[ index + 9 ].fStr : ""),
-                ( arrayData[ index ] ? arrayData[ index + 10 ].fStr : ""),
-                ( arrayData[ index ] ? arrayData[ index + 11 ].fStr : ""),
-                ( arrayData[ index ] ? arrayData[ index + 12 ].fStr : ""),
-                ( arrayData[ index ] ? arrayData[ index + 13 ].fStr : ""),
-                ( arrayData[ index ] ? arrayData[ index + 14 ].fStr : ""),
-                ( arrayData[ index ] ? arrayData[ index + 15 ].fStr : ""),
-                ( arrayData[ index ] ? arrayData[ index + 16 ].fStr : ""),
-                ( arrayData[ index ] ? arrayData[ index + 17 ].fStr : ""),
-                ( arrayData[ index ] ? arrayData[ index + 18 ].fStr : "")
-            ));
+        if ( !queryObject.dniDenunciante ) {
+            const pathPrefix = "INFRA";
+            const result = await axios.request({
+                url: this.baseURL + pathPrefix + this.authPath,
+                method: "get"
+            });
+
+            const arrayData = result.data.result.fArray;
+            // analyzeData
+            for (let index = 20; index < arrayData.length; index += 20) {
+                const infraccion = new InfraccionClass();
+                arrayResult.push( infraccion.setAPIData(
+                    ( arrayData[ index ] ? arrayData[ index ].fStr : "0"),
+                    ( arrayData[ index ] ? arrayData[ index + 1 ].fStr : "0"),
+                    ( arrayData[ index ] ? arrayData[ index + 2 ].fStr : ""),
+                    ( arrayData[ index ] ? arrayData[ index + 3 ].fStr : ""),
+                    ( arrayData[ index ] ? arrayData[ index + 4 ].fStr : "0"),
+                    ( arrayData[ index ] ? arrayData[ index + 5 ].fStr : ""),
+                    ( arrayData[ index ] ? arrayData[ index + 6 ].fStr : ""),
+                    ( arrayData[ index ] ? arrayData[ index + 7 ].fStr : ""),
+                    ( arrayData[ index ] ? arrayData[ index + 8 ].fStr : ""),
+                    ( arrayData[ index ] ? arrayData[ index + 9 ].fStr : ""),
+                    ( arrayData[ index ] ? arrayData[ index + 10 ].fStr : ""),
+                    ( arrayData[ index ] ? arrayData[ index + 11 ].fStr : ""),
+                    ( arrayData[ index ] ? arrayData[ index + 12 ].fStr : ""),
+                    ( arrayData[ index ] ? arrayData[ index + 13 ].fStr : ""),
+                    ( arrayData[ index ] ? arrayData[ index + 14 ].fStr : ""),
+                    ( arrayData[ index ] ? arrayData[ index + 15 ].fStr : ""),
+                    ( arrayData[ index ] ? arrayData[ index + 16 ].fStr : ""),
+                    ( arrayData[ index ] ? arrayData[ index + 17 ].fStr : ""),
+                    ( arrayData[ index ] ? arrayData[ index + 18 ].fStr : "")
+                ));
+            }
+            infraccionesDB = await Infraccion.find({});
+        } else {
+            infraccionesDB = await Infraccion.find( queryObject );
         }
-
         // Agregandole Los valores de Mongo
-        const infraccionesDB = await Infraccion.find({});
         const infraccionesParsed = infraccionesDB.map( iinfraccionModel => {
             const newInfraccion = new InfraccionClass();
             return newInfraccion.setFromIInfraccionModel( iinfraccionModel );
         });
 
         res.json( [ ...arrayResult, ...infraccionesParsed  ] );
+    }
+
+    public getMisInfracciones = async ( req: Request, res: Response, next: NextFunction ): Promise<any> => {
+        // Agregandole Los valores de Mongo
+        const infraccionesDB = await Infraccion.find(  );
+        const infraccionesParsed = infraccionesDB.map( iinfraccionModel => {
+            const newInfraccion = new InfraccionClass();
+            return newInfraccion.setFromIInfraccionModel( iinfraccionModel );
+        });
+        res.json( infraccionesParsed );
     }
 }

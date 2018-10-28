@@ -122,7 +122,6 @@ app.get("/api/tipos-de-infracciones", asyncHandler( apiHackathon.getTiposDeInfra
 app.get("/api/infracciones-x-ubicacion", asyncHandler( apiHackathon.getInfraccionesXUbicacion ) );
 app.get("/api/infracciones", asyncHandler( apiHackathon.getInfracciones ) );
 app.post("/api/guardar-infraccion", asyncHandler( apiHackathon.postGuardarInfraccion ) );
-
 /**
  * OAuth authentication routes. (Sign in)
  */
