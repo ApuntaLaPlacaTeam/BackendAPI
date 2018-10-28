@@ -13,7 +13,7 @@ import passport from "passport";
 import expressValidator from "express-validator";
 import bluebird from "bluebird";
 import { MONGODB_URI, SESSION_SECRET } from "./util/secrets";
-import asyncHandler from 'express-async-handler';
+import asyncHandler from "express-async-handler";
 
 const MongoStore = mongo(session);
 
@@ -33,7 +33,6 @@ import * as passportConfig from "./config/passport";
 
 // Instance Api Hackathon
 const apiHackathon = new APIHackathon();
-console.log( apiHackathon );
 
 // Create Express server
 const app = express();
@@ -120,6 +119,8 @@ app.get("/account/unlink/:provider", passportConfig.isAuthenticated, userControl
 app.get("/api", apiController.getApi);
 app.get("/api/facebook", passportConfig.isAuthenticated, passportConfig.isAuthorized, apiController.getFacebook);
 app.get("/api/tipos-de-infracciones", asyncHandler( apiHackathon.getTiposDeInfracciones ) );
+app.get("/api/infracciones-x-ubicacion", asyncHandler( apiHackathon.getInfraccionesXUbicacion ) );
+app.get("/api/infracciones", asyncHandler( apiHackathon.getInfracciones ) );
 
 /**
  * OAuth authentication routes. (Sign in)
