@@ -37,8 +37,8 @@ export interface IInfraccion {
     ubicacion: IUbicacion;
     descripcion: string;
 
-    public setAPIData( nro: any, anio: any, mes: string, fecha: string, nroActaControl: any, codigoInfraccion: string, tenorInfraccion: string, situacionActa: string, actasAnuladas: string, apellidosConductor: string, nombresConductor: string, nroLicenciaConductor: string, placaDeRodaje: string, tipoDeVia: string, lugarDeIntervencion: string, cuadra: string, codRuta: string, empresaTransporte: string, inspector: string ): void ;
-    public setSaveData( linkFoto: string, placaDeRodaje: string, dniDenunciante: string, ubicacion: Ubicacion, descripcion: string ): void;
+    setAPIData( nro: any, anio: any, mes: string, fecha: string, nroActaControl: any, codigoInfraccion: string, tenorInfraccion: string, situacionActa: string, actasAnuladas: string, apellidosConductor: string, nombresConductor: string, nroLicenciaConductor: string, placaDeRodaje: string, tipoDeVia: string, lugarDeIntervencion: string, cuadra: string, codRuta: string, empresaTransporte: string, inspector: string ): void ;
+    setSaveData( linkFoto: string, placaDeRodaje: string, dniDenunciante: string, ubicacion: IUbicacion, descripcion: string ): void;
 }
 
 interface IInfraccionModel extends IInfraccion, Document { }
